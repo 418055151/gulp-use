@@ -1,13 +1,44 @@
 
 //处理任务
+/*
+在当前项目根目录下安装各模块
+*/
 var gulp = require("gulp");
 
 //压缩图片模块
+/*
+npm install --save-dev gulp-imagemin
+*/
 var imagemin =require("gulp-imagemin");
 
 
 //压缩js模块
+/*
+npm install --save-dev gulp-uglify
+*/
 var uglify = require("gulp-uglify");
+
+
+
+//sass转css模块
+/*
+npm install gulp-sass --save-dev
+*/
+var sass = require('gulp-sass');
+
+
+
+//代码合并模块
+/*
+npm install --save-dev gulp-concat
+*/
+var concat = require('gulp-concat');
+
+
+
+
+
+
 
 /*
 
@@ -23,14 +54,9 @@ gulop.watch 	观察文件是否发生变化
 
 //定义任务
 gulp.task('message',function(){
-	return congole.log('message')
+	return console.log('message')
 })
 
-
-//定义默认任务
-gulp.task("default",function () {
-	return console.log('这是默认的任务，只需要执行gulp即可！')
-})
 
 
 //拷贝文件
@@ -54,3 +80,38 @@ gulp.task("scriptMin",function(){
 	.pipe(uglify())
 	.pipe(gulp.dest('dist/script'));
 })
+
+
+
+// sass转css
+gulp.task("sass",function(){
+	gulp.src('src/sass/*.scss')
+	.pipe(sass().on("error",sass.logError))
+	.pipe(gulp.dest('dist/css'));
+})
+
+
+//代码合并&同时执行压缩代码
+gulp.task('script-concat',function(){
+	gulp.src('src/script/*.js')
+	.pipe(concat('app.js'))
+	.pipe(uglify())
+	.pipe(gulp.dest('dist/script'))
+})
+
+
+//监听文件是否发生变化
+gulp.task("watch",function(){
+	gulp.watch('src/image/*',['imageMin']);
+	gulp.watch('src/sass/*.scss',['sass'])
+	gulp.watch('src/script/*.js',['script-concat'])
+	gulp.watch('src/*.html',['copyHtml'])
+})
+
+
+//定义默认任务
+/*
+执行多个任务
+*/
+gulp.task("default",['message','copyHtml','imageMin','script-concat','sass'])
+
